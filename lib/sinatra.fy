@@ -1,7 +1,6 @@
 require(File expand_path("../sinatra/delegator", __FILE__))
 require("sinatra")
 
-
 class Sinatra Base {
   def self def: name with: block {
     metaclass ruby: 'define_method args: [name] with_block: block
@@ -10,11 +9,11 @@ class Sinatra Base {
 
   def self configure: env with: block {
     args = [env] flatten()
-    ruby: 'configure args: env with_block: block
+    configure(env, &block)
   }
 
   def self configure: block {
-    ruby: 'configure with_block: block
+    configure(&block)
   }
 
   def self wrap: method {
@@ -31,12 +30,29 @@ class Sinatra Base {
     'not_found, 'template, 'layout
   ]
 
-  def self enable:  options { ruby: 'enable  args: [options] flatten() }
-  def self disable: options { ruby: 'disable args: [options] flatten() }
-  def self set: option to: value { set(option, value ) }
+  def self enable: options {
+    enable(*options) flatten()
+  }
 
-  Sinatra Delegator delegate('enable:, 'disable:, 'set:to:, 'configure:,
-    'configure:with:)
+  def self disable: options {
+    disable(*options) flatten()
+  }
+
+  def self set: option to: value {
+    set(option, value)
+  }
+
+  Sinatra Delegator delegate('enable:, 'disable:, 'set:to:,
+                             'configure:, 'configure:with:)
+
+  forwards_unary_ruby_methods
+
+  alias_method: 'redirect: for_ruby: 'redirect
+  alias_method: 'to: for_ruby: 'to
+}
+
+class Sinatra Request {
+  forwards_unary_ruby_methods
 }
 
 enable: 'run
