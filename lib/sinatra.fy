@@ -1,4 +1,3 @@
-require(File expand_path("../sinatra/delegator", __FILE__))
 require("sinatra")
 
 class Sinatra Base {
